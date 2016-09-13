@@ -1,9 +1,13 @@
+import java.util.zip.ZipFile
+
 import akka.actor.ActorSystem
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.model._
 import akka.http.scaladsl.server.Directives._
 import akka.stream.ActorMaterializer
-import scala.io.StdIn
+
+import scala.collection.JavaConversions._
+import scala.io.{Source, StdIn}
 
 object ScalaApp {
   def main(args: Array[String]) {
@@ -16,6 +20,10 @@ object ScalaApp {
     val route =
       path("hello") {
         get {
+          val rootzip = new ZipFile("data/data.zip")
+          rootzip.entries.
+            filter (_.getName.endsWith(".TXT")).
+            foreach { e => println(Source.fromInputStream(rootzip.getInputStream(e)).mkString) }
           complete(HttpEntity(ContentTypes.`text/html(UTF-8)`, "<h1>Say hello to akka-http</h1>"))
         }
       }
